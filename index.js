@@ -153,14 +153,15 @@ video.addEventListener('play', async () => {
 
 // Load face-api models
 Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/tiny_face_detector_model-weights_manifest.json'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_landmark_68_model-weights_manifest.json'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_recognition_model-weights_manifest.json'),
-    faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_expression_model-weights_manifest.json')
+    faceapi.nets.tinyFaceDetector.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/tiny_face_detector_model-weights_manifest.json'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_landmark_68_model-weights_manifest.json'),
+    faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_recognition_model-weights_manifest.json'),
+    faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_expression_model-weights_manifest.json')
 ]).then(async () => {
     await tf.setBackend('webgl');
     await tf.ready();
     logMessage('Models loaded and backend set to WebGL successfully.');
+    logMessage(`TensorFlow.js backend: ${tf.getBackend()}`);
 }).catch(err => {
     logMessage(`Failed to load models because: ${err.message}`);
 });
