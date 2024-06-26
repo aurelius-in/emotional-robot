@@ -158,9 +158,9 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_recognition_model-weights_manifest.json'),
     faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_expression_model-weights_manifest.json')
 ]).then(async () => {
-    await tf.setBackend('webgl');
+    await tf.setBackend('wasm');
     await tf.ready();
-    logMessage('Models loaded and backend set to WebGL successfully.');
+    logMessage('Models loaded and backend set to WASM successfully.');
     logMessage(`TensorFlow.js backend: ${tf.getBackend()}`);
 }).catch(err => {
     logMessage(`Failed to load models because: ${err.message}`);
