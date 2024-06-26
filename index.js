@@ -16,16 +16,6 @@ function logMessage(message) {
     console.log(message);
 }
 
-const emotionColors = {
-    angry: 'red',
-    disgusted: 'green',
-    surprised: 'orange',
-    neutral: 'grey',
-    fearful: 'black',
-    sad: 'darkblue',
-    happy: 'yellow'
-};
-
 async function startCamera() {
     try {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -107,43 +97,12 @@ video.addEventListener('play', async () => {
     setInterval(async () => {
         if (videoOn) {
             try {
-                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                    .withFaceLandmarks()
-                    .withFaceExpressions();
+                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions());
                 const resizedDetections = faceapi.resizeResults(detections, displaySize);
                 context.clearRect(0, 0, canvas.width, canvas.height);
                 faceapi.draw.drawDetections(canvas, resizedDetections);
-                faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-                faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
 
-                // Logging detections
                 console.log(detections);
-
-                // Clear previous emotions
-                emotionOutput.innerHTML = '';
-                emotionLabel.textContent = '';
-                document.body.style.backgroundColor = '#f0f0f0';
-
-                if (detections.length > 0) {
-                    const emotions = detections[0].expressions;
-                    let dominantEmotion = '';
-                    let maxValue = 0;
-                    for (const [emotion, value] of Object.entries(emotions)) {
-                        const li = document.createElement('li');
-                        li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
-                        emotionOutput.appendChild(li);
-
-                        if (value > maxValue) {
-                            dominantEmotion = emotion;
-                            maxValue = value;
-                        }
-                    }
-                    if (dominantEmotion) {
-                        emotionLabel.textContent = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
-                        document.body.style.backgroundColor = emotionColors[dominantEmotion];
-                        logMessage(`Dominant Emotion: ${dominantEmotion}`);
-                    }
-                }
             } catch (error) {
                 if (error.message.includes("d is not a function")) {
                     logMessage("Detected 'd is not a function' error. Ignoring and continuing.");
