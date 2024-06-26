@@ -153,10 +153,10 @@ video.addEventListener('play', async () => {
 
 // Load face-api models
 Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('/emotional-robot/models'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/emotional-robot/models'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('/emotional-robot/models'),
-    faceapi.nets.faceExpressionNet.loadFromUri('/emotional-robot/models')
+    faceapi.nets.tinyFaceDetector.loadFromUri('https://github.com/aurelius-in/emotional-robot/blob/main/models/tiny_face_detector_model-weights_manifest.json'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('https://github.com/aurelius-in/emotional-robot/blob/main/models/face_landmark_68_model-weights_manifest.json'),
+    faceapi.nets.faceRecognitionNet.loadFromUri('https://github.com/aurelius-in/emotional-robot/blob/main/models/face_recognition_model-weights_manifest.json'),
+    faceapi.nets.faceExpressionNet.loadFromUri('https://github.com/aurelius-in/emotional-robot/blob/main/models/face_expression_model-weights_manifest.json')
 ]).then(() => {
     logMessage('Models loaded successfully.');
 }).catch(err => {
