@@ -106,42 +106,46 @@ video.addEventListener('play', async () => {
 
     setInterval(async () => {
         if (videoOn) {
-            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                .withFaceLandmarks()
-                .withFaceExpressions();
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            faceapi.draw.drawDetections(canvas, resizedDetections);
-            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-            faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+            try {
+                const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                    .withFaceLandmarks()
+                    .withFaceExpressions();
+                const resizedDetections = faceapi.resizeResults(detections, displaySize);
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                faceapi.draw.drawDetections(canvas, resizedDetections);
+                faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+                faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
 
-            // Logging detections
-            console.log(detections);
+                // Logging detections
+                console.log(detections);
 
-            // Clear previous emotions
-            emotionOutput.innerHTML = '';
-            emotionLabel.textContent = '';
-            document.body.style.backgroundColor = '#f0f0f0';
-            
-            if (detections.length > 0) {
-                const emotions = detections[0].expressions;
-                let dominantEmotion = '';
-                let maxValue = 0;
-                for (const [emotion, value] of Object.entries(emotions)) {
-                    const li = document.createElement('li');
-                    li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
-                    emotionOutput.appendChild(li);
-                    
-                    if (value > maxValue) {
-                        dominantEmotion = emotion;
-                        maxValue = value;
+                // Clear previous emotions
+                emotionOutput.innerHTML = '';
+                emotionLabel.textContent = '';
+                document.body.style.backgroundColor = '#f0f0f0';
+                
+                if (detections.length > 0) {
+                    const emotions = detections[0].expressions;
+                    let dominantEmotion = '';
+                    let maxValue = 0;
+                    for (const [emotion, value] of Object.entries(emotions)) {
+                        const li = document.createElement('li');
+                        li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
+                        emotionOutput.appendChild(li);
+                        
+                        if (value > maxValue) {
+                            dominantEmotion = emotion;
+                            maxValue = value;
+                        }
+                    }
+                    if (dominantEmotion) {
+                        emotionLabel.textContent = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
+                        document.body.style.backgroundColor = emotionColors[dominantEmotion];
+                        logMessage(`Dominant Emotion: ${dominantEmotion}`);
                     }
                 }
-                if (dominantEmotion) {
-                    emotionLabel.textContent = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
-                    document.body.style.backgroundColor = emotionColors[dominantEmotion];
-                    logMessage(`Dominant Emotion: ${dominantEmotion}`);
-                }
+            } catch (error) {
+                logMessage(`Error during detection: ${error.message}`);
             }
         }
     }, 100);
@@ -149,12 +153,12 @@ video.addEventListener('play', async () => {
 
 // Load face-api models
 Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-    faceapi.nets.faceExpressionNet.loadFromUri('/models')
+    faceapi.nets.tinyFaceDetector.loadFromUri('/emotional-robot/models'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('/emotional-robot/models'),
+    faceapi.nets.faceRecognitionNet.loadFromUri('/emotional-robot/models'),
+    faceapi.nets.faceExpressionNet.loadFromUri('/emotional-robot/models')
 ]).then(() => {
     logMessage('Models loaded successfully.');
 }).catch(err => {
-    logMessage('Failed to load models because: ' + err.message);
+    logMessage(`Failed to load models because: ${err.message}`);
 });
