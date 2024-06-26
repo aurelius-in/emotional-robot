@@ -157,8 +157,9 @@ Promise.all([
     faceapi.nets.faceLandmark68Net.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_landmark_68_model-weights_manifest.json'),
     faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_recognition_model-weights_manifest.json'),
     faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/aurelius-in/emotional-robot/main/models/face_expression_model-weights_manifest.json')
-]).then(() => {
-    logMessage('Models loaded successfully.');
+]).then(async () => {
+    await tf.setBackend('webgl');
+    logMessage('Models loaded and backend set to WebGL successfully.');
 }).catch(err => {
     logMessage(`Failed to load models because: ${err.message}`);
 });
