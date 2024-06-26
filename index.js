@@ -19,7 +19,7 @@ async function startVideo(useFrontCamera = true) {
         }
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
-        errorMessage.textContent = '';
+        errorMessage.textContent = 'Camera is successfully accessed. Please allow permissions if prompted.';
     } catch (err) {
         errorMessage.textContent = 'Error accessing webcam: ' + err.message;
         console.error('Error accessing webcam:', err);
