@@ -10,9 +10,22 @@
     <h1>Live Emotion Detection</h1>
     <div id="video-container">
         <video id="video" autoplay muted playsinline></video>
+        <canvas id="overlay"></canvas>
+        <div id="emotion-label"></div>
     </div>
-    <button id="videoToggleButton">Turn Video On</button>
+    <div class="toggle-container">
+        <span class="toggle-text">MINE</span>
+        <label class="switch">
+            <input type="checkbox" id="cameraToggle">
+            <span class="slider round"></span>
+        </label>
+        <span class="toggle-text">OTHERS</span>
+    </div>
+    <button id="startButton">Start Camera</button>
     <p id="error-message">No errors</p>
+    <ul id="emotion-output"></ul>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
     <script src="index.js"></script>
 </body>
 </html>
