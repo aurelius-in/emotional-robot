@@ -1,23 +1,30 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const context = canvas.getContext('2d');
+const permissionsPrompt = document.getElementById('permissions-prompt');
 
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
     faceapi.nets.faceExpressionNet.loadFromUri('/models')
-]).then(startVideo);
+]).then(startVideo).catch(err => console.error('Failed to load models:', err));
 
 function startVideo() {
     navigator.mediaDevices.getUserMedia({ video: {} })
         .then(stream => {
             video.srcObject = stream;
+            permissionsPrompt.style.display = 'none';
         })
-        .catch(err => console.error("Error accessing webcam: ", err));
+        .catch(err => {
+            console.error('Error accessing webcam:', err);
+            permissionsPrompt.style.display = 'block';
+            permissionsPrompt.innerText = 'Please enable camera permissions in your browser settings. On Samsung, go to Settings > Apps > Your Browser > Permissions. On iPhone, go to Settings > Your Browser > Camera.';
+        });
 }
 
 video.addEventListener('play', () => {
+    console.log('Video playing');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const displaySize = { width: video.videoWidth, height: video.videoHeight };
