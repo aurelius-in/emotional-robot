@@ -1,4 +1,4 @@
-const video = document.getElementById('video'); 
+const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const context = canvas.getContext('2d');
 const switchCameraButton = document.getElementById('switchCameraButton');
@@ -41,7 +41,7 @@ async function startCamera() {
         video.srcObject = currentStream;
         logMessage('Camera started successfully.');
         videoOn = true;
-        startRecordingButton.textContent = '🎦 Stop Recording';
+        startRecordingButton.textContent = '🛑';
     } catch (error) {
         logMessage('Error accessing camera: ' + error.message);
     }
@@ -54,7 +54,7 @@ function stopCamera() {
     }
     video.srcObject = null;
     videoOn = false;
-    startRecordingButton.textContent = '🎦 Start Recording';
+    startRecordingButton.textContent = '🎦';
 }
 
 switchCameraButton.addEventListener('click', () => {
