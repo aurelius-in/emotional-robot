@@ -141,4 +141,9 @@ Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-    faceapi.nets.faceExpressionNet.loadLet's make sure the code is complete and addresses the requirements correctly:
+    faceapi.nets.faceExpressionNet.loadFromUri('/models')
+]).then(() => {
+    logMessage('Models loaded successfully.');
+}).catch(err => {
+    logMessage('Failed to load models because: ' + err.message);
+});
