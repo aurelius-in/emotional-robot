@@ -89,6 +89,7 @@ navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         stream.getTracks().forEach(track => track.stop());
         console.log('Camera permissions granted');
+        errorMessage.textContent = 'Camera permissions granted';
     })
     .catch(err => {
         errorMessage.textContent = 'Cannot access cameras because ' + err.message;
