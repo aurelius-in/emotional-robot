@@ -36,6 +36,20 @@
             top: 0;
             left: 0;
         }
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .toggle-container span {
+            margin: 0 10px;
+        }
+        #error-message {
+            color: red;
+            margin-top: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -44,9 +58,15 @@
         <video id="video" autoplay muted playsinline></video>
         <canvas id="overlay"></canvas>
     </div>
-    <p id="permissions-prompt" style="color: red; display: none;">
-        Please enable camera permissions in your browser settings.
-    </p>
+    <div class="toggle-container">
+        <span>MINE</span>
+        <label class="switch">
+            <input type="checkbox" id="cameraToggle">
+            <span class="slider"></span>
+        </label>
+        <span>OTHERS</span>
+    </div>
+    <p id="error-message"></p>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
     <script src="index.js"></script>
