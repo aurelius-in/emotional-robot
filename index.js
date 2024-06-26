@@ -1,30 +1,42 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const context = canvas.getContext('2d');
-const permissionsPrompt = document.getElementById('permissions-prompt');
+const cameraToggle = document.getElementById('cameraToggle');
+const errorMessage = document.getElementById('error-message');
+
+let currentStream;
+
+async function startVideo(useFrontCamera = true) {
+    const constraints = {
+        video: {
+            facingMode: useFrontCamera ? 'user' : 'environment'
+        }
+    };
+
+    try {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+        video.srcObject = currentStream;
+        errorMessage.textContent = '';
+    } catch (err) {
+        errorMessage.textContent = 'Error accessing webcam: ' + err.message;
+        console.error('Error accessing webcam:', err);
+    }
+}
 
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
     faceapi.nets.faceExpressionNet.loadFromUri('/models')
-]).then(startVideo).catch(err => console.error('Failed to load models:', err));
-
-function startVideo() {
-    navigator.mediaDevices.getUserMedia({ video: {} })
-        .then(stream => {
-            video.srcObject = stream;
-            permissionsPrompt.style.display = 'none';
-        })
-        .catch(err => {
-            console.error('Error accessing webcam:', err);
-            permissionsPrompt.style.display = 'block';
-            permissionsPrompt.innerText = 'Please enable camera permissions in your browser settings. On Samsung, go to Settings > Apps > Your Browser > Permissions. On iPhone, go to Settings > Your Browser > Camera.';
-        });
-}
+]).then(() => startVideo()).catch(err => {
+    errorMessage.textContent = 'Failed to load models: ' + err.message;
+    console.error('Failed to load models:', err);
+});
 
 video.addEventListener('play', () => {
-    console.log('Video playing');
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const displaySize = { width: video.videoWidth, height: video.videoHeight };
@@ -40,4 +52,9 @@ video.addEventListener('play', () => {
         faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
         faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
     }, 100);
+});
+
+cameraToggle.addEventListener('change', () => {
+    const useFrontCamera = cameraToggle.checked;
+    startVideo(useFrontCamera);
 });
