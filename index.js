@@ -1,47 +1,69 @@
 const video = document.getElementById('video');
-const videoToggleButton = document.getElementById('videoToggleButton');
+const canvas = document.getElementById('overlay');
+const context = canvas.getContext('2d');
+const startButton = document.getElementById('startButton');
+const cameraToggle = document.getElementById('cameraToggle');
 const errorMessage = document.getElementById('error-message');
+const emotionOutput = document.getElementById('emotion-output');
+const emotionLabel = document.getElementById('emotion-label');
 
 let currentStream;
 let videoOn = false;
 
 function logMessage(message) {
-    errorMessage.textContent = `${message}`;
+    errorMessage.textContent = message;
     console.log(message);
 }
 
-async function startVideo() {
+const emotionColors = {
+    angry: 'red',
+    disgusted: 'green',
+    surprised: 'orange',
+    neutral: 'grey',
+    fearful: 'black',
+    sad: 'darkblue',
+    happy: 'yellow'
+};
+
+async function startCamera() {
     try {
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            throw new Error('Browser does not support media devices API.');
+        }
+        
+        const permissions = await navigator.permissions.query({ name: 'camera' });
+        logMessage(`Camera permission state is ${permissions.state}`);
+
         const constraints = {
             video: {
-                facingMode: 'user'
+                facingMode: cameraToggle.checked ? 'environment' : 'user'
             }
         };
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
         logMessage('Camera started successfully.');
         videoOn = true;
-        videoToggleButton.textContent = 'Turn Video Off';
-    } catch (err) {
-        logMessage('Cannot access cameras because: ' + err.message);
+        startButton.textContent = 'Turn Video Off';
+    } catch (error) {
+        logMessage('Error accessing camera: ' + error.message);
     }
 }
 
-function stopVideo() {
+function stopCamera() {
     if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
         logMessage('Stopped video stream.');
     }
     video.srcObject = null;
     videoOn = false;
-    videoToggleButton.textContent = 'Turn Video On';
+    startButton.textContent = 'Turn Video On';
 }
 
-videoToggleButton.addEventListener('click', () => {
+startButton.addEventListener('click', () => {
     if (videoOn) {
-        stopVideo();
+        stopCamera();
     } else {
-        startVideo();
+        startCamera();
     }
 });
 
@@ -68,4 +90,60 @@ navigator.permissions.query({ name: 'camera' }).then(function (permissionStatus)
     };
 }).catch(function (err) {
     logMessage('Cannot query camera permissions because: ' + err.message);
+});
+
+video.addEventListener('play', () => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const displaySize = { width: video.videoWidth, height: video.videoHeight };
+    faceapi.matchDimensions(canvas, displaySize);
+
+    setInterval(async () => {
+        if (videoOn) {
+            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+                .withFaceLandmarks()
+                .withFaceExpressions();
+            const resizedDetections = faceapi.resizeResults(detections, displaySize);
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            faceapi.draw.drawDetections(canvas, resizedDetections);
+            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+            faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+            // Clear previous emotions
+            emotionOutput.innerHTML = '';
+            emotionLabel.textContent = '';
+            document.body.style.backgroundColor = '#f0f0f0';
+            
+            if (detections.length > 0) {
+                const emotions = detections[0].expressions;
+                let dominantEmotion = '';
+                let maxValue = 0;
+                for (const [emotion, value] of Object.entries(emotions)) {
+                    const li = document.createElement('li');
+                    li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
+                    emotionOutput.appendChild(li);
+                    
+                    if (value > maxValue) {
+                        dominantEmotion = emotion;
+                        maxValue = value;
+                    }
+                }
+                if (dominantEmotion) {
+                    emotionLabel.textContent = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
+                    document.body.style.backgroundColor = emotionColors[dominantEmotion];
+                }
+            }
+        }
+    }, 100);
+});
+
+Promise.all([
+    faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
+    faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
+    faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
+    faceapi.nets.faceExpressionNet.loadFromUri('/models')
+]).then(() => {
+    logMessage('Models loaded successfully.');
+}).catch(err => {
+    logMessage('Failed to load models because: ' + err.message);
 });
