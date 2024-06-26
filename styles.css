@@ -17,7 +17,7 @@ h1 {
     position: relative;
     width: 100%;
     max-width: 720px;
-    height: auto;
+    height: 60vh;
 }
 video {
     width: 100%;
