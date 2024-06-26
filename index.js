@@ -98,3 +98,8 @@ navigator.mediaDevices.getUserMedia({ video: true })
     .catch(err => {
         logMessage('Cannot access cameras because: ' + err.message);
     });
+
+// Check if the browser supports necessary APIs
+if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    logMessage('Browser does not support media devices API.');
+}
