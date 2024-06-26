@@ -21,6 +21,7 @@ async function startVideo(useFrontCamera = true) {
         }
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
+        console.log('Camera started successfully');
         errorMessage.textContent = 'No errors';
         videoOn = true;
         videoToggleButton.textContent = 'Turn Video Off';
@@ -87,6 +88,7 @@ cameraToggle.addEventListener('change', () => {
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         stream.getTracks().forEach(track => track.stop());
+        console.log('Camera permissions granted');
     })
     .catch(err => {
         errorMessage.textContent = 'Cannot access cameras because ' + err.message;
