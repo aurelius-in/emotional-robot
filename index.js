@@ -1,14 +1,15 @@
 const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const context = canvas.getContext('2d');
-const startButton = document.getElementById('startButton');
-const cameraToggle = document.getElementById('cameraToggle');
+const switchCameraButton = document.getElementById('switchCameraButton');
+const startRecordingButton = document.getElementById('startRecordingButton');
 const errorMessage = document.getElementById('error-message');
 const emotionOutput = document.getElementById('emotion-output');
 const emotionLabel = document.getElementById('emotion-label');
 
 let currentStream;
 let videoOn = false;
+let usingFrontCamera = true;
 
 function logMessage(message) {
     errorMessage.textContent = message;
@@ -33,14 +34,14 @@ async function startCamera() {
         
         const constraints = {
             video: {
-                facingMode: cameraToggle.checked ? 'environment' : 'user'
+                facingMode: usingFrontCamera ? 'user' : 'environment'
             }
         };
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
         logMessage('Camera started successfully.');
         videoOn = true;
-        startButton.textContent = 'Turn Video Off';
+        startRecordingButton.textContent = '🎦 Stop Recording';
     } catch (error) {
         logMessage('Error accessing camera: ' + error.message);
     }
@@ -53,10 +54,18 @@ function stopCamera() {
     }
     video.srcObject = null;
     videoOn = false;
-    startButton.textContent = 'Turn Video On';
+    startRecordingButton.textContent = '🎦 Start Recording';
 }
 
-startButton.addEventListener('click', () => {
+switchCameraButton.addEventListener('click', () => {
+    usingFrontCamera = !usingFrontCamera;
+    if (videoOn) {
+        stopCamera();
+        startCamera();
+    }
+});
+
+startRecordingButton.addEventListener('click', () => {
     if (videoOn) {
         stopCamera();
     } else {
