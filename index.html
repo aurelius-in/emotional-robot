@@ -13,13 +13,16 @@
         <canvas id="overlay"></canvas>
     </div>
     <div class="toggle-container">
-        <span>MINE</span>
+        <span class="toggle-text">MINE</span>
         <label class="switch">
             <input type="checkbox" id="cameraToggle">
-            <span class="slider round"><span class="smiley">🙂</span></span>
+            <span class="slider round">
+                <span class="arrow" id="arrow">◀️</span>
+            </span>
         </label>
-        <span>OTHERS</span>
+        <span class="toggle-text">OTHERS</span>
     </div>
+    <button id="videoToggleButton">Turn Video On</button>
     <p id="error-message"></p>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
