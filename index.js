@@ -31,7 +31,7 @@ async function startCamera() {
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
             throw new Error('Browser does not support media devices API.');
         }
-        
+
         const constraints = {
             video: {
                 facingMode: usingFrontCamera ? 'user' : 'environment'
@@ -123,7 +123,7 @@ video.addEventListener('play', async () => {
                 emotionOutput.innerHTML = '';
                 emotionLabel.textContent = '';
                 document.body.style.backgroundColor = '#f0f0f0';
-                
+
                 if (detections.length > 0) {
                     const emotions = detections[0].expressions;
                     let dominantEmotion = '';
@@ -132,7 +132,7 @@ video.addEventListener('play', async () => {
                         const li = document.createElement('li');
                         li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
                         emotionOutput.appendChild(li);
-                        
+
                         if (value > maxValue) {
                             dominantEmotion = emotion;
                             maxValue = value;
@@ -158,7 +158,7 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_recognition_model-weights_manifest.json'),
     faceapi.nets.faceExpressionNet.loadFromUri('https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/face_expression_model-weights_manifest.json')
 ]).then(async () => {
-    await tf.setBackend('wasm');
+    await tf.setBackend('webgl');
     await tf.ready();
     logMessage('Models loaded and backend set to WebGL successfully.');
     logMessage(`TensorFlow.js backend: ${tf.getBackend()}`);
