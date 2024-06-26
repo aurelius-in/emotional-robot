@@ -6,7 +6,7 @@ const startRecordingButton = document.getElementById('startRecordingButton');
 const errorMessage = document.getElementById('error-message');
 const emotionOutput = document.getElementById('emotion-output');
 const emotionLabel = document.getElementById('emotion-label');
-
+ 
 let currentStream;
 let videoOn = false;
 let usingFrontCamera = true;
