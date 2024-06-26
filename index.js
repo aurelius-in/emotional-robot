@@ -103,3 +103,13 @@ navigator.mediaDevices.getUserMedia({ video: true })
 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     logMessage('Browser does not support media devices API.');
 }
+
+// Check camera permissions dynamically
+navigator.permissions.query({name: 'camera'}).then(function(permissionStatus) {
+    logMessage('Camera permission state is ' + permissionStatus.state);
+    permissionStatus.onchange = function() {
+        logMessage('Camera permission state has changed to ' + this.state);
+    };
+}).catch(function(err) {
+    logMessage('Cannot query camera permissions because: ' + err.message);
+});
