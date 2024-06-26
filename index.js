@@ -146,6 +146,8 @@ video.addEventListener('play', async () => {
                 }
             } catch (error) {
                 logMessage(`Error during detection: ${error.message}`);
+                // Continue execution despite the error
+                return;
             }
         }
     }, 100);
