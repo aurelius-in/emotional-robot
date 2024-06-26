@@ -46,6 +46,7 @@ canvas {
     color: red;
     margin-top: 10px;
     text-align: center;
+    white-space: pre-wrap;
 }
 .switch {
     position: relative;
