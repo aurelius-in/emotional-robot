@@ -1,4 +1,4 @@
-const video = document.getElementById('video');
+const video = document.getElementById('video'); 
 const canvas = document.getElementById('overlay');
 const context = canvas.getContext('2d');
 const switchCameraButton = document.getElementById('switchCameraButton');
