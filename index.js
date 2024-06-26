@@ -4,6 +4,7 @@ const context = canvas.getContext('2d');
 const startButton = document.getElementById('startButton');
 const cameraToggle = document.getElementById('cameraToggle');
 const errorMessage = document.getElementById('error-message');
+const emotionOutput = document.getElementById('emotion-output');
 
 let currentStream;
 let videoOn = false;
@@ -96,14 +97,19 @@ video.addEventListener('play', () => {
             faceapi.draw.drawDetections(canvas, resizedDetections);
             faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
             faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+            // Clear previous emotions
+            emotionOutput.innerHTML = '';
+            if (detections.length > 0) {
+                const emotions = detections[0].expressions;
+                for (const [emotion, value] of Object.entries(emotions)) {
+                    const li = document.createElement('li');
+                    li.textContent = `${emotion}: ${(value * 100).toFixed(2)}%`;
+                    emotionOutput.appendChild(li);
+                }
+            }
         }
     }, 100);
-});
-
-cameraToggle.addEventListener('change', () => {
-    if (videoOn) {
-        startCamera();
-    }
 });
 
 Promise.all([
