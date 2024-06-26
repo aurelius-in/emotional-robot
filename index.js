@@ -1,7 +1,4 @@
 const video = document.getElementById('video');
-const canvas = document.getElementById('overlay');
-const context = canvas.getContext('2d');
-const cameraToggle = document.getElementById('cameraToggle');
 const videoToggleButton = document.getElementById('videoToggleButton');
 const errorMessage = document.getElementById('error-message');
 
@@ -9,22 +6,17 @@ let currentStream;
 let videoOn = false;
 
 function logMessage(message) {
-    errorMessage.textContent += `${message}\n`;
+    errorMessage.textContent = `${message}`;
     console.log(message);
 }
 
-async function startVideo(useFrontCamera = true) {
-    const constraints = {
-        video: {
-            facingMode: useFrontCamera ? 'user' : 'environment'
-        }
-    };
-
+async function startVideo() {
     try {
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-            logMessage('Stopped existing video stream.');
-        }
+        const constraints = {
+            video: {
+                facingMode: 'user'
+            }
+        };
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
         logMessage('Camera started successfully.');
@@ -45,47 +37,11 @@ function stopVideo() {
     videoToggleButton.textContent = 'Turn Video On';
 }
 
-Promise.all([
-    faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
-    faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
-    faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
-    faceapi.nets.faceExpressionNet.loadFromUri('/models')
-]).then(() => {
-    logMessage('Models loaded successfully.');
-    videoToggleButton.addEventListener('click', () => {
-        if (videoOn) {
-            stopVideo();
-        } else {
-            startVideo(cameraToggle.checked);
-        }
-    });
-}).catch(err => {
-    logMessage('Failed to load models because: ' + err.message);
-});
-
-video.addEventListener('play', () => {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const displaySize = { width: video.videoWidth, height: video.videoHeight };
-    faceapi.matchDimensions(canvas, displaySize);
-
-    setInterval(async () => {
-        if (videoOn) {
-            const detections = await faceapi.detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-                .withFaceLandmarks()
-                .withFaceExpressions();
-            const resizedDetections = faceapi.resizeResults(detections, displaySize);
-            context.clearRect(0, 0, canvas.width, canvas.height);
-            faceapi.draw.drawDetections(canvas, resizedDetections);
-            faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
-            faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
-        }
-    }, 100);
-});
-
-cameraToggle.addEventListener('change', () => {
+videoToggleButton.addEventListener('click', () => {
     if (videoOn) {
-        startVideo(cameraToggle.checked);
+        stopVideo();
+    } else {
+        startVideo();
     }
 });
 
@@ -105,11 +61,11 @@ if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
 }
 
 // Check camera permissions dynamically
-navigator.permissions.query({name: 'camera'}).then(function(permissionStatus) {
+navigator.permissions.query({ name: 'camera' }).then(function (permissionStatus) {
     logMessage('Camera permission state is ' + permissionStatus.state);
-    permissionStatus.onchange = function() {
+    permissionStatus.onchange = function () {
         logMessage('Camera permission state has changed to ' + this.state);
     };
-}).catch(function(err) {
+}).catch(function (err) {
     logMessage('Cannot query camera permissions because: ' + err.message);
 });
