@@ -89,7 +89,7 @@ navigator.permissions.query({ name: 'camera' }).then(function (permissionStatus)
     logMessage('Cannot query camera permissions because: ' + err.message);
 });
 
-video.addEventListener('play', () => {
+video.addEventListener('play', async () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const displaySize = { width: video.videoWidth, height: video.videoHeight };
@@ -105,6 +105,9 @@ video.addEventListener('play', () => {
             faceapi.draw.drawDetections(canvas, resizedDetections);
             faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
             faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+
+            // Logging detections
+            console.log(detections);
 
             // Clear previous emotions
             emotionOutput.innerHTML = '';
@@ -135,6 +138,7 @@ video.addEventListener('play', () => {
     }, 100);
 });
 
+// Load face-api models
 Promise.all([
     faceapi.nets.tinyFaceDetector.loadFromUri('/models'),
     faceapi.nets.faceLandmark68Net.loadFromUri('/models'),
