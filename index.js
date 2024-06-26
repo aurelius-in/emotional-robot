@@ -21,11 +21,11 @@ async function startVideo(useFrontCamera = true) {
         }
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
-        errorMessage.textContent = '';
+        errorMessage.textContent = 'No errors';
         videoOn = true;
         videoToggleButton.textContent = 'Turn Video Off';
     } catch (err) {
-        errorMessage.textContent = 'Error accessing webcam: ' + err.message;
+        errorMessage.textContent = 'Cannot access cameras because ' + err.message;
         console.error('Error accessing webcam:', err);
     }
 }
@@ -53,7 +53,7 @@ Promise.all([
         }
     });
 }).catch(err => {
-    errorMessage.textContent = 'Failed to load models: ' + err.message;
+    errorMessage.textContent = 'Failed to load models because ' + err.message;
     console.error('Failed to load models:', err);
 });
 
@@ -89,6 +89,6 @@ navigator.mediaDevices.getUserMedia({ video: true })
         stream.getTracks().forEach(track => track.stop());
     })
     .catch(err => {
-        errorMessage.textContent = 'Permission to access camera was denied or not requested: ' + err.message;
+        errorMessage.textContent = 'Cannot access cameras because ' + err.message;
         console.error('Permission error:', err);
     });
