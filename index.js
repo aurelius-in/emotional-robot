@@ -8,6 +8,11 @@ const errorMessage = document.getElementById('error-message');
 let currentStream;
 let videoOn = false;
 
+function logMessage(message) {
+    errorMessage.textContent += `${message}\n`;
+    console.log(message);
+}
+
 async function startVideo(useFrontCamera = true) {
     const constraints = {
         video: {
@@ -18,22 +23,22 @@ async function startVideo(useFrontCamera = true) {
     try {
         if (currentStream) {
             currentStream.getTracks().forEach(track => track.stop());
+            logMessage('Stopped existing video stream.');
         }
         currentStream = await navigator.mediaDevices.getUserMedia(constraints);
         video.srcObject = currentStream;
-        console.log('Camera started successfully');
-        errorMessage.textContent = 'No errors';
+        logMessage('Camera started successfully.');
         videoOn = true;
         videoToggleButton.textContent = 'Turn Video Off';
     } catch (err) {
-        errorMessage.textContent = 'Cannot access cameras because ' + err.message;
-        console.error('Error accessing webcam:', err);
+        logMessage('Cannot access cameras because: ' + err.message);
     }
 }
 
 function stopVideo() {
     if (currentStream) {
         currentStream.getTracks().forEach(track => track.stop());
+        logMessage('Stopped video stream.');
     }
     video.srcObject = null;
     videoOn = false;
@@ -46,6 +51,7 @@ Promise.all([
     faceapi.nets.faceRecognitionNet.loadFromUri('/models'),
     faceapi.nets.faceExpressionNet.loadFromUri('/models')
 ]).then(() => {
+    logMessage('Models loaded successfully.');
     videoToggleButton.addEventListener('click', () => {
         if (videoOn) {
             stopVideo();
@@ -54,8 +60,7 @@ Promise.all([
         }
     });
 }).catch(err => {
-    errorMessage.textContent = 'Failed to load models because ' + err.message;
-    console.error('Failed to load models:', err);
+    logMessage('Failed to load models because: ' + err.message);
 });
 
 video.addEventListener('play', () => {
@@ -88,10 +93,8 @@ cameraToggle.addEventListener('change', () => {
 navigator.mediaDevices.getUserMedia({ video: true })
     .then(stream => {
         stream.getTracks().forEach(track => track.stop());
-        console.log('Camera permissions granted');
-        errorMessage.textContent = 'Camera permissions granted';
+        logMessage('Camera permissions granted.');
     })
     .catch(err => {
-        errorMessage.textContent = 'Cannot access cameras because ' + err.message;
-        console.error('Permission error:', err);
+        logMessage('Cannot access cameras because: ' + err.message);
     });
