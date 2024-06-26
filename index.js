@@ -4,7 +4,6 @@ const context = canvas.getContext('2d');
 const cameraToggle = document.getElementById('cameraToggle');
 const videoToggleButton = document.getElementById('videoToggleButton');
 const errorMessage = document.getElementById('error-message');
-const arrow = document.getElementById('arrow');
 
 let currentStream;
 let videoOn = false;
@@ -79,10 +78,8 @@ video.addEventListener('play', () => {
 });
 
 cameraToggle.addEventListener('change', () => {
-    const useFrontCamera = cameraToggle.checked;
-    arrow.textContent = useFrontCamera ? '◀️' : '▶️';
     if (videoOn) {
-        startVideo(useFrontCamera);
+        startVideo(cameraToggle.checked);
     }
 });
 
