@@ -31,9 +31,6 @@ async function startCamera() {
             throw new Error('Browser does not support media devices API.');
         }
         
-        const permissions = await navigator.permissions.query({ name: 'camera' });
-        logMessage(`Camera permission state is ${permissions.state}`);
-
         const constraints = {
             video: {
                 facingMode: cameraToggle.checked ? 'environment' : 'user'
@@ -131,6 +128,7 @@ video.addEventListener('play', () => {
                 if (dominantEmotion) {
                     emotionLabel.textContent = dominantEmotion.charAt(0).toUpperCase() + dominantEmotion.slice(1);
                     document.body.style.backgroundColor = emotionColors[dominantEmotion];
+                    logMessage(`Dominant Emotion: ${dominantEmotion}`);
                 }
             }
         }
