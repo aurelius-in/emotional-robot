@@ -35,8 +35,9 @@ canvas {
     justify-content: center;
     margin-top: 10px;
 }
-.toggle-container span {
+.toggle-text {
     margin: 0 10px;
+    font-weight: bold;
 }
 #error-message {
     color: red;
@@ -85,10 +86,16 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
-.smiley {
+.arrow {
     position: absolute;
     font-size: 16px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+#videoToggleButton {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
 }
